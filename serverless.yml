@@ -26,6 +26,11 @@ provider:
   name: aws
   region: us-east-1
   runtime: nodejs14.x
+  iamRoleStatements:
+    - Effect: Allow
+      Action: 
+        - dynamodb:*
+      Resource: "*"    
   
 functions:
   createTodo:
@@ -35,6 +40,13 @@ functions:
           path: /createTodo/{user_id}
           method: POST
           cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb: Query
+          - dynamodb: PutItem       
+        Resource: 'arn:aws:dynamodb:${self.provider.region}:*:table/users_todos'
+
   listTodo:
     handler: src/functions/listTodo.handle
     events:
@@ -42,6 +54,12 @@ functions:
           path: /listTodo/{user_id}
           method: GET
           cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb: Query          
+        Resource: 'arn:aws:dynamodb:${self.provider.region}:*:table/users_todos'
+
 
 resources:
   Resources:
